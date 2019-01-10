@@ -72,7 +72,8 @@ class StateMachine<TContext extends StateMachineContext> {
             try {
                 log.info("StateMachine transition starting (State:${currentState.name},Transition:${transition.name})")
                 transition.execute(context)
-                log.info("StateMachine transition completed (State:${currentState.name},Transition:${transition.name})")
+                log.info("StateMachine transition completed (State:${currentState.name},Transition:${transition.name},NextState:${transition.destination.name})")
+                currentState = transition.destination
             } catch (Exception ex) {
                 log.error("StateMachine transition failed (State:${currentState.name},Transition:${transition.name},Exception:${ex.message})", ex)
                 context.setException(ex)
@@ -81,8 +82,6 @@ class StateMachine<TContext extends StateMachineContext> {
             }
 
             context.resetRetryCount()
-            currentState = transition.destination
-            log.info("StateMachine changed to new State (State:${currentState.name})")
         }
     }
 

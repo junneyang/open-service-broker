@@ -21,11 +21,26 @@ import groovy.transform.CompileStatic
 abstract class BaseStateMachineContext implements StateMachineContext {
 
     private Exception exception
+    private isErrorMessageCustomized = false
+    private String errorMessage = "NO ERROR"
     private Map<String, Object> properties = new HashMap<String, Object>()
     private Integer retryCounter = 0
 
+
     void setException(Exception exception) {
         this.exception = exception
+        if (!isErrorMessageCustomized) {
+            this.errorMessage = exception.message
+        }
+    }
+
+    void setCustomizedErrorText(String errorText) {
+        this.errorMessage = errorText
+        this.isErrorMessageCustomized = true
+    }
+
+    String getErrorText() {
+        return errorMessage
     }
 
     Exception getException() {

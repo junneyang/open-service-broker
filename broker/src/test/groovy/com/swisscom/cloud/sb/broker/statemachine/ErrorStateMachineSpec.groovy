@@ -17,27 +17,30 @@ package com.swisscom.cloud.sb.broker.statemachine
 
 import spock.lang.Specification
 
-class StateMachineSpec extends Specification {
+class ErrorStateMachineSpec extends Specification {
 
     StateMachine testee
 
     void setup() {
-
         def stateMachineBuilder = new StateMachineBuilder()
 
         stateMachineBuilder.startState
                 .addTransition(new NormalTransition("Delay-0", 0), "Node-1")
         stateMachineBuilder.getState("Node-1")
-                .addTransition(new NormalTransition("Delay-5", 9), "Node-2")
-                .addTransition(new NoOpErrorTransition(), StateMachine.STATENAME_ERROR)
+                .addTransition(new ImmediateClosureTransition("crashing", {
+            context -> throw new Exception("FAILURE")
+        }), "Node-2")
+                .addTransition(new NoOpErrorTransition(), "RemedyNode")
+        stateMachineBuilder.getState("RemedyNode")
+                .addTransition(new NoOpErrorTransition(), stateMachineBuilder.errorState)
         stateMachineBuilder.getState("Node-2")
-                .addTransition(new NormalTransition("Delay-5", 5), stateMachineBuilder.endState)
+                .addTransition(new NormalTransition("Delay-5", 2), stateMachineBuilder.endState)
 
         testee = stateMachineBuilder.build()
         testee.context = new TestStateMachineContext()
     }
 
-    void 'Can run statemachine'() {
+    void 'StateMachine handles Error during transition'() {
         when:
         for (def i = 0; i < 20; i ++) {
             testee.trigger()
@@ -46,5 +49,7 @@ class StateMachineSpec extends Specification {
         then:
         noExceptionThrown()
         testee.completed == true
+        testee.currentState.name.equals(StateMachine.STATENAME_ERROR)
     }
+
 }

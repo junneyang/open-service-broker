@@ -15,23 +15,16 @@
 
 package com.swisscom.cloud.sb.broker.statemachine
 
-abstract class ErrorTransition<TContext extends StateMachineContext> implements Transition<TContext> {
-    private String name
+import groovy.transform.CompileStatic
 
-    protected ErrorTransition(String name) {
-        this.name = name
+@CompileStatic
+class NoOpErrorTransition<TContext extends StateMachineContext> extends ErrorTransition<TContext > {
+
+
+    protected NoOpErrorTransition(String name = "NoOpErrorTransition") {
+        super(name)
     }
 
     @Override
-    String getName() {
-        return this.name
-    }
-
-    @Override
-    Boolean canTransition(TContext context) {
-        return context.hasException()
-    }
-
-    @Override
-    void rollbackOnError(TContext context) { }
+    void execute(TContext context) { }
 }

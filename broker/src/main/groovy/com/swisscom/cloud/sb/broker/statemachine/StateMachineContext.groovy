@@ -15,15 +15,19 @@
 
 package com.swisscom.cloud.sb.broker.statemachine
 
+import com.swisscom.cloud.sb.broker.model.ServiceInstance
 import groovy.transform.CompileStatic
 
 @CompileStatic
 interface StateMachineContext {
+    ServiceInstance getServiceInstance()
+    Map<String, Object> getProperties()
+
     void setException(Exception exception)
     Exception getException()
     Boolean hasException()
-
-    Map<String, Object> getProperties()
+    void setCustomizedErrorText(String errorText)
+    String getErrorText()
 
     Integer increaseRetryCounter()
     Integer getRetryCount()

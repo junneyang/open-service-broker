@@ -15,23 +15,24 @@
 
 package com.swisscom.cloud.sb.broker.statemachine
 
-abstract class ErrorTransition<TContext extends StateMachineContext> implements Transition<TContext> {
-    private String name
+class ImmediateClosureTransition<TestStateMachineContext> extends BaseTransition<TestStateMachineContext> {
+    private final Closure action
 
-    protected ErrorTransition(String name) {
-        this.name = name
+    protected ImmediateClosureTransition(String name, Closure action) {
+        super(name)
+        this.action = action
     }
 
     @Override
-    String getName() {
-        return this.name
+    Boolean canTransitionInternal(TestStateMachineContext context) {
+        return true
     }
 
     @Override
-    Boolean canTransition(TContext context) {
-        return context.hasException()
+    void execute(TestStateMachineContext context) {
+        action(context)
     }
 
     @Override
-    void rollbackOnError(TContext context) { }
+    void rollbackOnError(TestStateMachineContext context) { }
 }

@@ -75,6 +75,8 @@ class StateMachineBuilder {
 
     State getEndState() { return getState(StateMachine.STATENAME_END) }
 
+    State getErrorState() { return getState(StateMachine.STATENAME_ERROR) }
+
     Boolean isValid() {
         def graphInfo = buildGraph(this.edges)
         return graphInfo.isCompletable && graphInfo.isConnected
